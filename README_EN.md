@@ -12,6 +12,7 @@ The door station provides a one-way live video uplink and door-side audio to the
 
 - [Features](#features)
 - [Hardware Platform and Roles](#hardware-platform-and-roles)
+- [External Accessories and PIR Wiring](#external-accessories-and-pir-wiring)
 - [Documentation and Hardware Files](#documentation-and-hardware-files)
 - [Ringing, Listening, and Calling](#ringing-listening-and-calling)
 - [Visitor Records and PIR Snapshots](#visitor-records-and-pir-snapshots)
@@ -48,20 +49,32 @@ The project uses two identical **Lierda L-LRMAM36-FANN4-DK01 development kits**.
   <sub>Lierda L-LRMAM36-FANN4-DK01 development kit (click the image to open the purchase page)</sub>
 </p>
 
-| Role | Hardware | Purpose |
+| Role | Kit and external accessory | Purpose |
 | --- | --- | --- |
-| Outdoor door station | DK01 development kit; AM312 required for PIR | Doorbell trigger, camera and microphone capture, PIR snapshots, and LR2021 transmission. |
-| Indoor display gateway | DK01 development kit | Ringing, door video, listening, two-way calls, visitor records, and settings. |
+| Outdoor door station | [Lierda L-LRMAM36-FANN4-DK01 development kit](https://item.taobao.com/item.htm?id=1074290287510) (https://item.taobao.com/item.htm?id=1074290287510) + optional [AM312 PIR sensor module](https://e.tb.cn/h.8QmQiC5bW3w6Jr4?tk=MG18TXmjFKS) (https://e.tb.cn/h.8QmQiC5bW3w6Jr4?tk=MG18TXmjFKS) | Doorbell trigger, camera and microphone capture, PIR snapshots, and LR2021 transmission. |
+| Indoor display gateway | [Lierda L-LRMAM36-FANN4-DK01 development kit](https://item.taobao.com/item.htm?id=1074290287510) (https://item.taobao.com/item.htm?id=1074290287510) | Ringing, door video, listening, two-way calls, visitor records, and settings. |
 
-Wire the optional AM312 PIR module while power is disconnected:
+Except for the separately purchased AM312 PIR sensor module, the other required hardware is supplied as part of the DK01 development kit and is not listed separately. The purchase links point to Taobao items supplied by the hardware vendor. Availability, package contents, pricing, and product information are subject to the sales pages.
 
-| AM312 pin | Connect to DK01 | Notes |
+## External Accessories and PIR Wiring
+
+PIR motion snapshots on the door station require an external AM312 miniature pyroelectric infrared module. It can be omitted when motion snapshots are not needed.
+
+| External accessory | Purpose | Purchase link |
 | --- | --- | --- |
-| `VCC` | `3V3` | A 3.3 V supply is recommended. |
-| `OUT` | `GPIO12` | Active high; the firmware configures an input pull-down. |
-| `GND` | `GND` | The sensor and development board must share ground. |
+| AM312 miniature PIR motion sensor module | Detects changes in infrared radiation caused by a moving person and triggers a door-station snapshot that is pushed to the gateway | [Taobao: AM312 miniature PIR motion sensor module](https://e.tb.cn/h.8QmQiC5bW3w6Jr4?tk=MG18TXmjFKS) (https://e.tb.cn/h.8QmQiC5bW3w6Jr4?tk=MG18TXmjFKS) |
 
-GPIO12 is also the touch interrupt in the display-gateway role, so the PIR should only be connected and enabled on the door station. An [AM312 purchase link](https://e.tb.cn/h.8QmQiC5bW3w6Jr4?tk=MG18TXmjFKS) is provided for reference; product information is subject to the sales page.
+Disconnect power before wiring. Use the board's 3.3 V supply where possible:
+
+| AM312 pin | Connect to L-LRMAM36-FANN4-DK01 | Notes |
+| --- | --- | --- |
+| `VCC` | `3V3` | A 3.3 V supply is recommended so that no signal above 3.3 V is presented to the ESP32-S3. |
+| `OUT` | `GPIO12` | The firmware configures this pin as a pulled-down input with an active-high trigger. |
+| `GND` | `GND` | The AM312 and development board must share ground. |
+
+The PIR input is intended for the **door-station role only**. In the display-gateway role, `GPIO12` is also assigned to the touch-panel interrupt, so do not connect the AM312 to a gateway. Use the DK01 silkscreen and hardware documentation to identify the physical header or pad.
+
+The firmware arms `GPIO12` about 5 seconds after startup. A high output from the AM312 immediately captures one image and pushes it to the gateway; after a trigger, the firmware waits 15 seconds before re-arming. In low-power mode, the active-high signal can also wake the door station and start the capture and upload. Enable `PIR Motion` on the gateway Settings page before use; the setting is sent to the door station and stored in NVS.
 
 ## Documentation and Hardware Files
 
