@@ -6,7 +6,7 @@ AM36 Electronic Doorbell 是一套基于利尔达 AM36 ESP32-S3 与 LR2021 平�
 
 门口机向显示网关提供单向实时视频上行和门口声音；接听后，系统在继续显示门口视频的同时建立双向全双工语音。门铃无人接听时，网关可在 PSRAM 中保存最多 2 条未接音视频记录；门口机的可选 PIR 传感器还可主动推送最多 5 张移动抓拍。
 
-![AM36 Electronic Doorbell 工作流程](docs/images/doorbell-workflow-zh.png)
+![AM36 Electronic Doorbell 门口机与显示网关正反面](docs/images/am36-doorbell-hardware-v2-zh.jpg)
 
 ## 目录
 
@@ -39,6 +39,8 @@ AM36 Electronic Doorbell 是一套基于利尔达 AM36 ESP32-S3 与 LR2021 平�
 - 网关显示两端电压、传输速率、帧率、RSSI、事件时间、麦克风状态和未读访客数。
 
 未接记录和 PIR 抓拍仅保存在网关 PSRAM 中，重启或断电后会丢失。当前固件不提供 HTTP 图库或持久化访客存储。
+
+![AM36 Electronic Doorbell 工作流程](docs/images/doorbell-workflow-zh.png)
 
 ## 硬件平台与设备角色
 
@@ -149,16 +151,17 @@ PIR 在门口机启动约 5 秒后布防。检测到 GPIO12 高电平后推送�
 
 ## 设置项
 
-当前 `Settings` 页面只有四项操作：
+当前 `Settings` 页面只有五项操作：
 
 | 设置项 | 功能 |
 | --- | --- |
 | `CAPTURE` | 与网关 `K5` 相同：启动查看/监听，并在后续操作中进入或退出双向通话。 |
 | `PIR Motion` | 开启或关闭门口机 PIR 抓拍。 |
 | `Volume` | 网关播放音量在 0 至 15 之间循环，每档约 8.5 dB，15 为最大。 |
+| `JPEG Quality` | 门口机图像编码质量，在 15 至 95 之间以 10 为步进循环，默认 25。数值越高画面越清晰，每帧也更大。 |
 | `Low Power` | 开启或关闭门口机 LoRa CAD 低功耗待机。 |
 
-PIR 和低功耗状态只有在与门口机的配置交互成功后才更新，并保存在设备 NVS 中。音量保存在网关 NVS 中。
+PIR、低功耗和 JPEG 质量只有在与门口机的配置交互成功后才更新，并保存在门口机 NVS 中；网关另存一份用于显示。音量保存在网关 NVS 中。
 
 ## 低功耗模式
 
